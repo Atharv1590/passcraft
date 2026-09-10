@@ -1,0 +1,147 @@
+{
+  "entities": {
+    "account": {
+      "title": "Account",
+      "description": "Master user organizer account",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "The normalized account email address" },
+        "passwordHash": { "type": "string", "description": "Hashed password for shared multi-device access" },
+        "displayName": { "type": "string", "description": "Display name of the organizer/organization" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of account creation" },
+        "lastActiveAt": { "type": "string", "description": "ISO timestamp of last activity" },
+        "deviceCount": { "type": "number", "description": "Count of connected devices" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "event": {
+      "title": "Event",
+      "description": "Event management and venue configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique event ID" },
+        "title": { "type": "string", "description": "Event title" },
+        "date": { "type": "string", "description": "Event date" },
+        "time": { "type": "string", "description": "Event time" },
+        "location": { "type": "string", "description": "Event venue location" },
+        "themeColor": { "type": "string", "description": "Hex theme color" },
+        "status": { "type": "string", "description": "upcoming, live, or ended" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "title", "date", "location"]
+    },
+    "pass": {
+      "title": "Pass",
+      "description": "Cryptographic security QR pass and admission credentials",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Pass ID" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "code16": { "type": "string", "description": "16-digit cryptographic security code" },
+        "formattedCode": { "type": "string", "description": "Formatted code with dashes" },
+        "category": { "type": "string", "description": "Pass category/tier" },
+        "status": { "type": "string", "description": "unassigned, assigned, or checked_in" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "code16", "eventId", "status"]
+    },
+    "financial": {
+      "title": "FinancialEntry",
+      "description": "Financial ledger income or expense record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Financial entry ID" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "type": { "type": "string", "description": "income or expense" },
+        "amount": { "type": "number", "description": "Dollar amount" },
+        "description": { "type": "string", "description": "Description note" },
+        "timestamp": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "type", "amount"]
+    },
+    "gateLog": {
+      "title": "GateLog",
+      "description": "Gate admission scanner audit record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Log ID" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "passId": { "type": "string", "description": "Associated pass ID" },
+        "status": { "type": "string", "description": "admitted, duplicate_denied, etc." },
+        "gateName": { "type": "string", "description": "Name of scanner gate" },
+        "attendeeName": { "type": "string", "description": "Attendee name" },
+        "entryTimestamp": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "eventId", "passId", "status", "entryTimestamp"]
+    },
+    "deviceSession": {
+      "title": "DeviceSession",
+      "description": "Connected device session record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Device session ID" },
+        "deviceName": { "type": "string", "description": "Device label" },
+        "location": { "type": "string", "description": "City or location name" },
+        "lastPing": { "type": "string", "description": "ISO timestamp of last activity" },
+        "userAgent": { "type": "string", "description": "Browser / OS info" },
+        "role": { "type": "string", "description": "User role: owner, client_viewer, gate_operator" },
+        "allowedEventId": { "type": "string", "description": "Allowed event ID or all" },
+        "revoked": { "type": "boolean", "description": "Whether device was revoked" }
+      },
+      "required": ["id", "deviceName", "location", "lastPing"]
+    },
+    "accessCode": {
+      "title": "AccessCode",
+      "description": "1-time quick access passcode",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique Code ID" },
+        "code": { "type": "string", "description": "Quick access code string" },
+        "role": { "type": "string", "description": "Role: client_viewer, gate_operator, organizer" },
+        "targetLocation": { "type": "string", "description": "Assigned location" },
+        "targetLabel": { "type": "string", "description": "Assigned device label" },
+        "allowedEventId": { "type": "string", "description": "Allowed event ID or all" },
+        "allowedEventTitle": { "type": "string", "description": "Event title preview" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "createdByEmail": { "type": "string", "description": "Owner email who issued the code" },
+        "isActive": { "type": "boolean", "description": "Whether the code is active" },
+        "useCount": { "type": "number", "description": "Number of devices logged in with this code" }
+      },
+      "required": ["id", "code", "role", "createdByEmail", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/accounts/{accountId}": {
+      "schema": "account",
+      "description": "Master account document containing synced collections"
+    },
+    "/accounts/{accountId}/events/{eventId}": {
+      "schema": "event",
+      "description": "Events created by organizer"
+    },
+    "/accounts/{accountId}/passes/{passId}": {
+      "schema": "pass",
+      "description": "Issued and unassigned passes"
+    },
+    "/accounts/{accountId}/financials/{financialId}": {
+      "schema": "financial",
+      "description": "Income and expense ledger records"
+    },
+    "/accounts/{accountId}/gateLogs/{logId}": {
+      "schema": "gateLog",
+      "description": "Gate entry audit logs"
+    },
+    "/accounts/{accountId}/devices/{deviceId}": {
+      "schema": "deviceSession",
+      "description": "Connected device sessions"
+    },
+    "/accounts/{accountId}/accessCodes/{codeId}": {
+      "schema": "accessCode",
+      "description": "1-time quick access passcodes"
+    },
+    "/quickAccessCodes/{codeString}": {
+      "schema": "accessCode",
+      "description": "Global quick code lookup by code string"
+    }
+  }
+}

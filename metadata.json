@@ -1,0 +1,10 @@
+{
+  "name": "PassCraft - 16-Digit QR Event Pass & Canva Export Manager",
+  "description": "Generate 16-digit QR passes, assign attendees via camera scanner, dispatch passes, event guidelines, and post-event recap emails via Pass Bomber, Rules Bomber, and Thank You pages, track centralized broadcast history, and manage ticket pricing tiers.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
